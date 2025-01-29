@@ -11,7 +11,7 @@ TC BPM Shifter
 Developed by: FD
 ---------------------------------------------------------------------------]]
 
-local pluginVersion = "1.0.0"
+local pluginVersion = "2.0.0"
 local githubRepoAPI = "https://api.github.com/repos/Compl3xs/TC-BPM-Shifter/releases/latest"
 local pluginDir = "C:/ProgramData/MALightingTechnology/gma3_library/datapools/plugins" 
 
@@ -530,18 +530,44 @@ local function readOutputFile(outputPath)
     return cleanOutput(content)
 end
 
+-- Funktion zur Umwandlung einer Versionsnummer in eine Tabelle {major, minor, patch}
+local function parseVersion(versionString)
+    local major, minor, patch = versionString:match("(%d+)%.(%d+)%.(%d+)")
+    return { tonumber(major), tonumber(minor), tonumber(patch) }
+end
+
+-- Funktion zum Vergleich von zwei Versionen
+local function isVersionNewer(currentVersion, latestVersion)
+    local current = parseVersion(currentVersion)
+    local latest = parseVersion(latestVersion)
+
+    if not current or not latest then
+        Printf("[ERROR] Versionsvergleich fehlgeschlagen! Ungültige Versionsnummer.")
+        return false
+    end
+
+    -- Vergleich: Hauptversion, Nebenversion, Patch
+    if latest[1] > current[1] then return true end
+    if latest[1] == current[1] and latest[2] > current[2] then return true end
+    if latest[1] == current[1] and latest[2] == current[2] and latest[3] > current[3] then return true end
+
+    return false
+end
+
 -- Funktion zum Parsen von JSON und Versionsprüfung
 local function parseJSON(response)
     local data = json.decode(response)
     if not data or not data.tag_name then return nil end
 
     local latestVersion = data.tag_name
-    if latestVersion == pluginVersion then
-        logMessage("INFO", "Plugin ist aktuell. Keine Updates verfügbar. Version: " ..pluginVersion)
+
+    -- **Neuen Versionsvergleich nutzen**
+    if not isVersionNewer(pluginVersion, latestVersion) then
+        Printf("Plugin ist aktuell. Keine Updates verfügbar.")
         return nil
     end
 
-    logMessage("INFO", "Neue Version gefunden. Aktuelle: " ..latestVersion.. " Neue Version: " ..pluginVersion)
+    Printf("Neue Version gefunden: %s (Aktuell: %s)", latestVersion, pluginVersion)
 
     for _, asset in ipairs(data.assets) do
         if asset.name:match("%.lua$") then
