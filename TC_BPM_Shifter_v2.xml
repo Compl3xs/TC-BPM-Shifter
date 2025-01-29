@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <GMA3 DataVersion="2.0.2.0">
-    <Plugin Index="1" Name="TC_BPM_Shifter" Path="" Version="2.0.1" Author="FD">
-        <ComponentLua Index="1" FileName="TC_BPM_Shifter_v2.0.1.lua" />
+    <Plugin Index="1" Name="TC_BPM_Shifter" Path="" Version="2.0.2" Author="FD">
+        <ComponentLua Index="1" FileName="TC_BPM_Shifter_v2.0.2.lua" />
     </Plugin>
 </GMA3>
